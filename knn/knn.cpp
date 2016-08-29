@@ -3,7 +3,10 @@
 #include <vector>
 #include <string>
 using namespace std;
-
+/*
+	KNN
+	@chenbjin 2016-08-28
+*/
 typedef vector<double> FVector;
 const int LabelTypes = 4;
 
@@ -51,8 +54,7 @@ double distance(FVector &f1, FVector &f2) {
 int main(int argc, char const *argv[]) {
 	int k, l , m, n;
 	vector<Sample> train;
-	//vector<Sample> test;
-
+	
 	while(cin >> k >> l >> m >> n) {
 		int i = 0, j = 0;
 		train.resize(m);
@@ -93,6 +95,7 @@ int main(int argc, char const *argv[]) {
 			}
 			sort(labels.begin(), labels.end());
 
+			/* 统计结果 */
 			vector<int> ans;
 			ans.push_back(labels[0].idl);
 			for (s = 1; s < LabelTypes; ++s) {

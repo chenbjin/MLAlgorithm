@@ -1,9 +1,13 @@
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <string>
 #include <vector>
 using namespace std;
-
+/*
+	Bayes
+	@chenbjin 2016-08-28
+*/
 const int FeatureL = 2; //特征数
 const int MaxValue = 11; //特征取值范围 1－10
 
@@ -12,6 +16,23 @@ struct Sample {
 	vector<int> feature;
 	int label;
 };
+
+/* 数据集导入 */
+void loadData(vector<Sample> &data, string filename) {
+	ifstream fin(filename, ios::in);
+	if (!fin) { return; }
+	char buffer[200];
+	Sample cur;
+	cur.feature.resize(FeatureL);
+	//使用 while(!fin.eof()) 最后一行会多读一次。
+	//http://www.cnblogs.com/zhengxiaoping/p/5614317.html
+	while (fin.peek() != EOF) {
+		fin.getline(buffer, 150);
+		sscanf(buffer, "%d\t%d\t%d", &cur.feature[0], &cur.feature[1], &cur.label);
+		data.push_back(cur);
+	}
+	fin.close();
+}
 
 /* 计算先验概率 */
 double getPriorProb(vector<Sample> &data, int label) {
@@ -25,7 +46,9 @@ double getPriorProb(vector<Sample> &data, int label) {
 	return 1.0*cnt / data.size();
 }
 
-/* 计算条件概率 p(idx=k｜label) */
+/* 计算条件概率
+即在类别label条件下第idx个特征为k的概率： p(idx=k｜label)
+*/
 double getConProb(vector<Sample> &data, int idx, int k, int label) {
 	int cnt_label = 0, cnt_k = 0;
 	for (int i = 0; i < data.size(); i++) {
@@ -39,6 +62,7 @@ double getConProb(vector<Sample> &data, int idx, int k, int label) {
 	return 1.0*cnt_k / cnt_label;
 }
 
+/* 按分隔符sep 分割字符串 */
 void split(string &s, char sep, vector<int> &values) {
 	int num = 0;
 	for(int i = 0; i < s.size(); ++i) {
@@ -58,8 +82,12 @@ int main(int argc, char const *argv[]) {
 	vector<int> problems;
 	split(s, '\t', problems);
 	getline(cin, ss);
-	cout << "continue... " << endl;
+
 	vector<Sample> data;
+	loadData(data, "dataSet.txt");
+
+	cout << "sample num:" << data.size() << endl;
+	/*
 	Sample sample;
 	sample.feature.resize(FeatureL);
 	int tt = 1000;
@@ -67,7 +95,7 @@ int main(int argc, char const *argv[]) {
 		cin >> sample.feature[0] >> sample.feature[1] >> sample.label;
 		data.push_back(sample);
 	}
-
+	*/
 	double prior1 = getPriorProb(data, 1);
 	double prior2 = getPriorProb(data, 2);
 
